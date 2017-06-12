@@ -27,7 +27,7 @@ class Employee(UserMixin, db.Model):
     @property
     def password(self):
         """
-        Prevent pasword from being accessed
+        Prevent password from being accessed
         """
         raise AttributeError('password is not a readable attribute.')
 
