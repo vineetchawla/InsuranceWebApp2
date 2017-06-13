@@ -5,24 +5,18 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db, login_manager
 
-class Employee(UserMixin, db.Model):
-    """
-    Create an Employee table
-    """
-
-    # Ensures table will be named in plural and not in singular
-    # as is the name of the model
-    __tablename__ = 'employees'
+class User(UserMixin, db.Model):
+    __tablename__ = 'user_data'
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), index=True, unique=True)
-    username = db.Column(db.String(60), index=True, unique=True)
+    username = db.Column(db.String(60), db.ForeignKey('insurance_records.user_id'))
     first_name = db.Column(db.String(60), index=True)
     last_name = db.Column(db.String(60), index=True)
     password_hash = db.Column(db.String(128))
-    department_id = db.Column(db.Integer, db.ForeignKey('departments.id'))
-    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     is_admin = db.Column(db.Boolean, default=False)
+    flight_date = db.Column(db.Date)
+    flight_no = db.Column(db.Text, db.ForeignKey('flight_data.id'))
 
     @property
     def password(self):
@@ -45,41 +39,36 @@ class Employee(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<Employee: {}>'.format(self.username)
+        return '<User: {}>'.format(self.username)
+
 
 # Set up user_loader
 @login_manager.user_loader
 def load_user(user_id):
-    return Employee.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
-class Department(db.Model):
-    """
-    Create a Department table
-    """
+class Insurance_data(db.Model):
+    __tablename__ = 'insurance_records'
 
-    __tablename__ = 'departments'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60), unique=True)
-    description = db.Column(db.String(200))
-    employees = db.relationship('Employee', backref='department',
-                                lazy='dynamic')
+    user_id = db.Column(db.String(60), primary_key=True)
+    money_paid = db.Column(db.Float)
+    interest1 = db.Column(db.Float)
+    interest2 = db.Column(db.Float)
+    interest3 = db.Column(db.Float)
+    flight_date = db.Column(db.Date)
+    user = db.relationship('User', backref='records', lazy='dynamic' )
 
     def __repr__(self):
-        return '<Department: {}>'.format(self.name)
+        return '<Insurance User: {}>'.format(self.name)
 
-class Role(db.Model):
-    """
-    Create a Role table
-    """
 
-    __tablename__ = 'roles'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60), unique=True)
-    description = db.Column(db.String(200))
-    employees = db.relationship('Employee', backref='role',
-                                lazy='dynamic')
+class Flight(db.Model):
+    __tablename__ = 'flight_data'
+    id = db.Column(db.String(10), primary_key=True)
+    arrival_airport = db.Column(db.String(20), index=True)
+    departure_airport = db.Column(db.String(20), index=True)
+    date = db.Column(db.Date)
+    user = db.relationship('User', backref='flight_data', lazy='dynamic' )
 
     def __repr__(self):
-        return '<Role: {}>'.format(self.name)
+        return '<Flight_data: {}>'.format(self.name)
