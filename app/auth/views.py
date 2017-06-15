@@ -16,14 +16,14 @@ def register():
     """
     form = RegistrationForm()
     if form.validate_on_submit():
-        employee = User(email=form.email.data,
+        user = User(email=form.email.data,
                             username=form.username.data,
                             first_name=form.first_name.data,
                             last_name=form.last_name.data,
                             password=form.password.data)
 
         # add employee to the database
-        db.session.add(employee)
+        db.session.add(user)
         db.session.commit()
         flash('You have successfully registered! You may now login.')
 
@@ -44,11 +44,11 @@ def login():
 
         # check whether employee exists in the database and whether
         # the password entered matches the password in the database
-        employee = User.query.filter_by(email=form.email.data).first()
-        if employee is not None and employee.verify_password(
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None and user.verify_password(
                 form.password.data):
             # log employee in
-            login_user(employee)
+            login_user(user)
 
             #redirect to appropriate dashboard
             if User.is_admin:
