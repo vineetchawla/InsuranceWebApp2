@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{ title }} | Project Dream Team</title>
+    <title>{{ title }} | Flight Insurance. Reborn.</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -20,20 +20,17 @@
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand topnav" href="{{ url_for('home.homepage') }}">Project Dream Team</a>
+              <a class="navbar-brand topnav" href="{{ url_for('home.homepage') }}">Flight Insurance. For dummies.</a>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
               <ul class="nav navbar-nav navbar-right">
                   {% if current_user.is_authenticated %}
                     {% if current_user.is_admin %}
                         <li><a href="{{ url_for('home.admin_dashboard') }}">Dashboard</a></li>
-                        <li><a href="#">Departments</a></li>
-                        <li><a href="#">Roles</a></li>
-                        <li><a href="#">Employees</a></li>
+                        <li><a href="#">Users</a></li>
                     {% else %}
                         <li><a href="{{ url_for('home.dashboard') }}">Dashboard</a></li>
                     {% endif %}
-                  <li><a href="{{ url_for('home.dashboard') }}">Dashboard</a></li>
                   <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                   <li><a><i class="fa fa-user"></i>  Hi, {{ current_user.username }}!</a></li>
                   {% else %}
@@ -65,7 +62,7 @@
                           <li><a href="{{ url_for('auth.login') }}">Login</a></li>
                         {% endif %}
                     </ul>
-                    <p class="copyright text-muted small">Copyright © 2016. All Rights Reserved</p>
+                    <p class="copyright text-muted small">Copyright © 2017. All Rights Reserved</p>
                 </div>
             </div>
         </div>
