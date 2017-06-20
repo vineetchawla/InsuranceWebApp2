@@ -4,6 +4,8 @@ class Config(object):
     """
     Common configurations
     """
+    #SESSION_TYPE = 'redis'
+
 
     # Put any configurations here that are common across all environments
 

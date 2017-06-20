@@ -17,15 +17,14 @@ def check_admin():
 
 # Department Views
 
-@admin.route('/flights', methods=['GET', 'POST'])
+
+#TODO complete and add the table to the default view
+@admin.route('/admin/dashboard')
 @login_required
-def list_users_admin():
-    """
-    List all Users with insurance
-    """
+def admin_dashboard():
+    # prevent non-admins from accessing the page
     check_admin()
 
     users = User.query.all()
 
-    return render_template('admin/users.html',
-                           users=users, title="All Users")
+    return render_template('home/admin_dashboard.html', title="Dashboard Admin")
