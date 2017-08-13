@@ -20,7 +20,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(60), index=True)
     last_name = db.Column(db.String(60), index=True)
     password_hash = db.Column(db.String(128))
-    flight_id = db.Column(db.Integer, db.ForeignKey('flights.id'))
+    flight_id = db.Column(db.Integer, db.ForeignKey('flights.flight_no'))
     insurance_id = db.Column(db.Integer, db.ForeignKey('insurances.id'))
     is_admin = db.Column(db.Boolean, default=False)
 
@@ -54,16 +54,17 @@ def load_user(user_id):
 
 class Flight(db.Model):
     """
-    Create a Department table
+    Create a Flight table
     """
 
     __tablename__ = 'flights'
 
-    id = db.Column(db.Integer, primary_key=True)
-    flight_no = db.Column(db.String(60), unique=True)
+    flight_no = db.Column(db.String(10), primary_key=True)
     from_airport = db.Column(db.String(60))
     to_airport = db.Column(db.String(60))
-    time = db.Time;
+    arrival_time = db.Time;
+    departure_time = db.Time;
+    flight_company = db.Column(db.String(20))
     users = db.relationship('User', backref='flight',
                                 lazy='dynamic')
 
@@ -72,7 +73,7 @@ class Flight(db.Model):
 
 class Insurance(db.Model):
     """
-    Create a Role table
+    Create an Insurance table
     """
 
     __tablename__ = 'insurances'
