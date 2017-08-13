@@ -52,7 +52,7 @@ def login():
 
             #redirect to appropriate dashboard
             if user.is_admin:
-                return redirect(url_for('home.admin_dashboard'))
+                return redirect(url_for('admin.admin_dashboard'))
             else:
                 return redirect(url_for('home.dashboard'))
 
