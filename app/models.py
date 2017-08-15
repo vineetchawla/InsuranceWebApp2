@@ -7,7 +7,7 @@ from app import db, login_manager
 
 class User(UserMixin, db.Model):
     """
-    Create a User table
+    Create an User table
     """
 
     # Ensures table will be named in plural and not in singular
@@ -16,11 +16,10 @@ class User(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(60), index=True, unique=True)
-    username = db.Column(db.String(60), index=True, unique=True)
     first_name = db.Column(db.String(60), index=True)
     last_name = db.Column(db.String(60), index=True)
     password_hash = db.Column(db.String(128))
-    flight_id = db.Column(db.Integer, db.ForeignKey('flights.flight_no'))
+    flight_id = db.Column(db.String(10), db.ForeignKey('flights.id'))
     insurance_id = db.Column(db.Integer, db.ForeignKey('insurances.id'))
     is_admin = db.Column(db.Boolean, default=False)
 
@@ -45,7 +44,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<User: {}>'.format(self.username)
+        return '<User: {}>'.format(self.first_name)
 
 # Set up user_loader
 @login_manager.user_loader
@@ -59,32 +58,49 @@ class Flight(db.Model):
 
     __tablename__ = 'flights'
 
-    flight_no = db.Column(db.String(10), primary_key=True)
+    id = db.Column(db.String(10), primary_key=True)
     from_airport = db.Column(db.String(60))
     to_airport = db.Column(db.String(60))
-    arrival_time = db.Time;
-    departure_time = db.Time;
+    arrival_time = db.Column(db.Time)
+    departure_time = db.Column(db.Time)
     flight_company = db.Column(db.String(20))
     users = db.relationship('User', backref='flight',
                                 lazy='dynamic')
 
+
     def __repr__(self):
-        return '<Flight: {}>'.format(self.flight_no)
+        return '<Flight: {}>'.format(self.id)
 
 class Insurance(db.Model):
     """
-    Create an Insurance table
+    Create a Role table
     """
 
     __tablename__ = 'insurances'
-
     id = db.Column(db.Integer, primary_key=True)
-    principal = db.Float;
-    interest = db.Float;
-    payment_account = db.String(100)
+    principal = db.Column(db.Float)
+    interest = db.Column(db.Float)
+    payment_account = db.Column(db.String(100))
     description = db.Column(db.String(200))
+
     users = db.relationship('User', backref='insurance',
                                 lazy='dynamic')
 
     def __repr__(self):
-        return '<Role: {}>'.format(self.name)
+        return '<Insurance: {}>'.format(self.id)
+
+class DB_flight_data(db.Model):
+    Flight_no = db.Column(db.String(10), primary_key=True)
+    Departure_airport = db.Column(db.String(30))
+    Arrival_Airport = db.Column(db.String(30))
+    Aircraft = db.Column(db.String(10))
+    Flight_time = db.Column(db.Integer)
+    standard_Departure = db.Column(db.Time)
+    standard_arrival = db.Column(db.Time)
+    Latitude = db.Column(db.Float)
+    Longitude = db.Column(db.Float)
+    Airline = db.Column(db.String(30))
+    time_block = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '<Flight: {}>'.format(self.Flight_no)

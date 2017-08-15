@@ -17,15 +17,18 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(email=form.email.data,
-                            username=form.username.data,
                             first_name=form.first_name.data,
                             last_name=form.last_name.data,
                             password=form.password.data)
 
         # add employee to the database
-        db.session.add(user)
-        db.session.commit()
-        flash('You have successfully registered! You may now login.')
+        try:
+            db.session.add(user)
+            db.session.commit()
+            flash('You have successfully registered! You may now login.')
+        except:
+            db.session.rollback()
+            raise
 
         # redirect to the login page
         return redirect(url_for('auth.login'))
@@ -37,17 +40,18 @@ def register():
 def login():
     """
     Handle requests to the /login route
-    Log an employee in through the login form
+    Log an user in through the login form
     """
     form = LoginForm()
     if form.validate_on_submit():
 
-        # check whether employee exists in the database and whether
+        # check whether user exists in the database and whether
         # the password entered matches the password in the database
         user = User.query.filter_by(email=form.email.data).first()
+
         if user is not None and user.verify_password(
                 form.password.data):
-            # log employee in
+            # log user in
             login_user(user)
 
             #redirect to appropriate dashboard
@@ -68,7 +72,7 @@ def login():
 def logout():
     """
     Handle requests to the /logout route
-    Log an employee out through the logout link
+    Log a user out through the logout link
     """
     logout_user()
     flash('You have successfully been logged out.')

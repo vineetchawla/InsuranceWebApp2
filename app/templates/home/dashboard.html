@@ -3,13 +3,25 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block body %}
+<script type="text/javascript">
+    $(function() {
+        $.ajax({
+            url: '{{ url_for("home.autocomplete") }}'
+            }).done(function (data) {
+                $('#autocomplete').autocomplete({
+                    source: data.json_list,
+                    minLength: 2
+                });
+            });
+        });
+</script>
 <div class="intro-header">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="intro-message">
-                    <h1>The Dashboard</h1>
-                    <h3>We made it here!</h3>
+                    <h1>Select a flight</h1>
+                    <h3><input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/></h3>
                     <hr class="intro-divider">
                     </ul>
                 </div>

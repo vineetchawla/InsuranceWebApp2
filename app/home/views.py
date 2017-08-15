@@ -3,9 +3,9 @@
 from . import home
 from forms import FlightForm, InsuranceForm
 from .. import db
-#from ..models import User
+from ..models import User, DB_flight_data
 
-from flask import render_template, session, redirect, url_for
+from flask import render_template, session, redirect, url_for, abort, jsonify, request
 from flask_login import login_required, current_user
 
 from . import home
@@ -24,6 +24,25 @@ def dashboard():
     Render the dashboard template on the /dashboard route
     """
     return render_template('home/dashboard.html', title="Dashboard User")
+
+
+@home.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    """
+    Render the admin dashboard template on the /admin/dashboard route
+    """
+    if not current_user.is_admin:
+        abort(403)
+
+    return render_template('home/admin_dashboard.html', title="Dashboard")
+
+@home.route('/autocomplete', methods=['GET'])
+def autocomplete():
+    search = request.args.get('q')
+    query = session.query().filter(DB_flight_data.Flight_no.like('%' + str(search) + '%'))
+    results = [mv[0] for mv in query.all()]
+    return jsonify(matching_results=results)
 
 @home.route('/flight_selection', methods =['GET', 'POST'])
 @login_required
