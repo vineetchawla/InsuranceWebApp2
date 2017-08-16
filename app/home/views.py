@@ -3,9 +3,10 @@
 from . import home
 from forms import FlightForm, InsuranceForm
 from .. import db
+import httplib
 from ..models import User, DB_flight_data
 
-from flask import render_template, session, redirect, url_for, abort, jsonify, request
+from flask import render_template, session, redirect, url_for, abort, jsonify, request, json
 from flask_login import login_required, current_user
 
 from . import home
@@ -40,24 +41,16 @@ def admin_dashboard():
 @home.route('/autocomplete', methods=['GET'])
 def autocomplete():
     search = request.args.get('q')
-    query = session.query().filter(DB_flight_data.Flight_no.like('%' + str(search) + '%'))
-    results = [mv[0] for mv in query.all()]
-    return jsonify(matching_results=results)
+    flights = DB_flight_data.query.all()
+    print flights
+    #flights2 = DB_flight_data.query.filter_by(DB_flight_data.Flight_no.like('%' + str(search) + '%'))
+    #print flights2
+    query = list(DB_flight_data.query.filter(DB_flight_data.Flight_no.startswith(str(search))).all())
+    print ("came inside at least")
+    print query
 
-@home.route('/flight_selection', methods =['GET', 'POST'])
-@login_required
-def select_flight():
-    """
-    Render the flight information form
-    """
-    form = FlightForm()
-    user_id = current_user.user_id
-    if form.validate_on_submit():
-        flight_data = {"arrival_airport": form.to_airport.data, "departure_airport":form.from_airport.data,
-                       "date":form.date.data, "flight_id":form.flight_id.data}
-        session[user_id] = flight_data
-        return redirect(url_for("select_insurance"), )
+    #results = [mv[0] for mv in query]
+    #return jsonify(matching_results=query)
+    return httplib.HTTPResponse(json.dumps(list(DB_flight_data.query.filter
+                                                (DB_flight_data.Flight_no.startswith(str(search))).all())),mimetype="application/json")
 
-def select_insurance():
-    form = InsuranceForm()
-    user_id = current_user.user_id
