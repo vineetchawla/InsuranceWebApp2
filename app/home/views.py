@@ -42,15 +42,17 @@ def admin_dashboard():
 def autocomplete():
     search = request.args.get('q')
     flights = DB_flight_data.query.all()
-    print flights
+    #print flights
     #flights2 = DB_flight_data.query.filter_by(DB_flight_data.Flight_no.like('%' + str(search) + '%'))
     #print flights2
-    query = list(DB_flight_data.query.filter(DB_flight_data.Flight_no.startswith(str(search))).all())
+    query = list(set(DB_flight_data.query.filter(DB_flight_data.Flight_no.startswith(str(search))).all()))
     print ("came inside at least")
-    print query
+    print (query)
+
+    NAMES=["abc","abcd","abcde","abcdef"]
 
     #results = [mv[0] for mv in query]
-    #return jsonify(matching_results=query)
-    return httplib.HTTPResponse(json.dumps(list(DB_flight_data.query.filter
-                                                (DB_flight_data.Flight_no.startswith(str(search))).all())),mimetype="application/json")
+    return jsonify(json_list=NAMES)
+    #return httplib.HTTPResponse(json.dumps(list(DB_flight_data.query.filter
+ #                                               (DB_flight_data.Flight_no.startswith(str(search))).all())),mimetype="application/json")
 
