@@ -103,4 +103,4 @@ class DB_flight_data(db.Model):
     time_block = db.Column(db.Integer)
 
     def __repr__(self):
-        return '<Insurance: {}>'.format(self.Flight_no)
+        return "{}".format(self.Flight_no)

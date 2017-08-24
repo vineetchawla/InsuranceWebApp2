@@ -1,9 +1,8 @@
 # app/home/views.py
 
 from . import home
-from forms import FlightForm, InsuranceForm
+from forms import FlightForm
 from .. import db
-import httplib
 from ..models import User, DB_flight_data
 
 from flask import render_template, session, redirect, url_for, abort, jsonify, request, json
@@ -41,18 +40,6 @@ def admin_dashboard():
 @home.route('/autocomplete', methods=['GET'])
 def autocomplete():
     search = request.args.get('q')
-    flights = DB_flight_data.query.all()
-    #print flights
-    #flights2 = DB_flight_data.query.filter_by(DB_flight_data.Flight_no.like('%' + str(search) + '%'))
-    #print flights2
-    query = list(set(DB_flight_data.query.filter(DB_flight_data.Flight_no.startswith(str(search))).all()))
-    print ("came inside at least")
-    print (query)
-
-    NAMES=["abc","abcd","abcde","abcdef"]
-
-    #results = [mv[0] for mv in query]
-    return jsonify(json_list=NAMES)
-    #return httplib.HTTPResponse(json.dumps(list(DB_flight_data.query.filter
- #                                               (DB_flight_data.Flight_no.startswith(str(search))).all())),mimetype="application/json")
-
+    query = list(DB_flight_data.query.filter(DB_flight_data.Flight_no.startswith(str(search))).all())
+    query = map(str, query)
+    return jsonify(result=query)
