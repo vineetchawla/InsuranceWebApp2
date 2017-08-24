@@ -9,6 +9,7 @@ from flask import render_template, session, redirect, url_for, abort, jsonify, r
 from flask_login import login_required, current_user
 
 from . import home
+from forms import FlightForm
 
 @home.route('/')
 def homepage():
@@ -43,3 +44,9 @@ def autocomplete():
     query = list(DB_flight_data.query.filter(DB_flight_data.Flight_no.startswith(str(search))).all())
     query = map(str, query)
     return jsonify(result=query)
+
+@home.route('/flight_details', methods=['GET'])
+def flight_details():
+    form = FlightForm()
+
+    return render_template('home/flight_details.html', form = form, title = "Select A Flight")

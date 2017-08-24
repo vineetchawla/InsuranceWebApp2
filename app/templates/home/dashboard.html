@@ -4,37 +4,4 @@
 {% block title %}Dashboard{% endblock %}
 {% block body %}
 
-<script type="text/javascript">
-$(function() {
-    $("#autocomplete").autocomplete({
-        source:function(request, response) {
-            $.getJSON("{{url_for('home.autocomplete')}}",{
-                q: request.term, // in flask, "q" will be the argument to look for using request.args
-            }, function(data) {
-                response(data.result);
-            });
-        },
-        minLength: 2,
-        select: function(event, ui) {
-            console.log(ui.item.value); // not in your question, but might help later
-        }
-    });
-})
-
-</script>
-
-<div class="intro-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="intro-message">
-                    <h1>Select a flight</h1>
-                    <input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/>
-                    <hr class="intro-divider">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
