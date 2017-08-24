@@ -11,7 +11,7 @@ $(function() {
             $.getJSON("{{url_for('home.autocomplete')}}",{
                 q: request.term, // in flask, "q" will be the argument to look for using request.args
             }, function(data) {
-                response(data.result); // matching_results from jsonify
+                response(data.result);
             });
         },
         minLength: 2,
