@@ -6,13 +6,12 @@
 
 <script type="text/javascript">
 $(function() {
-    $("#flight_no").autocomplete({
+    $("#autocomplete").autocomplete({
         source:function(request, response) {
             $.getJSON("{{url_for('home.autocomplete')}}",{
                 q: request.term, // in flask, "q" will be the argument to look for using request.args
             }, function(data) {
-
-                response(data.matching_results); // matching_results from jsonify
+                response(data.result); // matching_results from jsonify
             });
         },
         minLength: 2,
@@ -21,6 +20,7 @@ $(function() {
         }
     });
 })
+
 </script>
 
 <div class="intro-header">
@@ -29,7 +29,7 @@ $(function() {
             <div class="col-lg-12">
                 <div class="intro-message">
                     <h1>Select a flight</h1>
-                    <input name="flight_no" type="text" id="flight_no" class="form-control input-lg"/>
+                    <input name="autocomplete" type="text" id="autocomplete" class="form-control input-lg"/>
                     <hr class="intro-divider">
                 </div>
             </div>
