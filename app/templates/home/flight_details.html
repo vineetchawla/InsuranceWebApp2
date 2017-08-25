@@ -17,30 +17,21 @@ $(function() {
         },
         minLength: 2,
         select: function(event, ui) {
-            $("#airline").val("")
-            $("#from_airport").val("")
-            $("#to_airport").val("")
-            $("#arrival_time").val("")
-            $("#departure_time").val("")
 
             $.ajax({
                 url: "{{url_for('home.get_flight_details')}}",
                 type: 'get',
                 data: {'q' : ui.item.value},
                 success: function(data, status) {
-                    if(data == "ok") {
-                        console.log("came in")
-                    }
+                    $("#airline").val(data.airline)
+                    $("#departure_airport").val(data.departure_airport)
+                    $("#arrival_airport").val(data.arrival_airport)
+                    $("#arrival_time").val(data.arrival_time)
+                    $("#departure_time").val(data.departure_time)
+                    $("#departure_city").val(data.departure_city)
+                    $("#arrival_city").val(data.arrival_city)
                 },
             });
-
-            //$.getJSON("{{url_for('home.get_flight_details')}}",{
-            //    q: ui.item.value, // in flask, "q" will be the argument to look for using request.args
-            //}, function(data) {
-            //        response(data.result);
-            //    }
-            //);
-            //console.log(data.result); // not in your question, but might help later
         }
     });
 })

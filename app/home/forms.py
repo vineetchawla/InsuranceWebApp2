@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-from wtforms_components import DateTimeField, read_only
+from wtforms_components import DateTimeField, read_only, DateRange
 from wtforms.fields.html5 import DateField
+from datetime import datetime
 
 from ..models import User
 
@@ -18,6 +19,6 @@ class FlightForm(FlaskForm):
     airline = StringField('Airline', render_kw={'readonly': True})
     arrival_time = DateTimeField('Arrival time', render_kw={'readonly': True})
     departure_time = DateTimeField('Departure Time', render_kw={'readonly': True})
-    date = DateField('Flight Date', validators=[DataRequired()])
+    date = DateField('Flight Date', validators=[DataRequired(), DateRange(min=datetime(2017,9,1))])
 
-    submit = SubmitField('Search')
+    submit = SubmitField('Calculate Insurance rates')
