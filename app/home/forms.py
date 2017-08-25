@@ -11,8 +11,10 @@ class FlightForm(FlaskForm):
     Forms for users to select the flights
     """
     flight_id = StringField('FlightID', validators=[DataRequired()])
-    from_airport = StringField('Departure Airport', render_kw={'readonly': True})
-    to_airport = StringField('Arrival Airport', render_kw={'readonly': True})
+    departure_airport = StringField('Departure Airport', render_kw={'readonly': True})
+    departure_city = StringField('Departure City', render_kw={'readonly': True})
+    arrival_airport = StringField('Arrival Airport', render_kw={'readonly': True})
+    arrival_city = StringField('Arrival City', render_kw={'readonly': True})
     airline = StringField('Airline', render_kw={'readonly': True})
     arrival_time = DateTimeField('Arrival time', render_kw={'readonly': True})
     departure_time = DateTimeField('Departure Time', render_kw={'readonly': True})

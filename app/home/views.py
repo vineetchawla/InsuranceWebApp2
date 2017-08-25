@@ -4,6 +4,7 @@ from . import home
 from forms import FlightForm
 from .. import db
 from ..models import User, DB_flight_data
+import requests
 
 from flask import render_template, session, redirect, url_for, abort, jsonify, request, json
 from flask_login import login_required, current_user
@@ -50,3 +51,38 @@ def flight_details():
     form = FlightForm()
 
     return render_template('home/flight_details.html', form = form, title = "Select A Flight")
+
+@home.route('/get_flight_details', methods=['GET'])
+def get_flight_details():
+    search =request.args.get('q')
+    print search
+
+    username = "vineetchawla"
+    apiKey = "bb5b25cd2fbd4afc31c786116c8034a20234cb1e"
+    fxmlUrl = "https://flightxml.flightaware.com/json/FlightXML3/"
+
+    payload = {'ident': search, 'howMany' : '1'}
+    response = requests.get(fxmlUrl + "FlightInfoStatus",
+                            params=payload, auth=(username, apiKey))
+    flight_json =  response.json()
+    flight_info = flight_json["FlightInfoStatusResult"]["flights"][0]
+
+    departure_city = flight_info["origin"]["city"]
+    departure_airport = flight_info["origin"]["airport_name"]
+    arrival_city = flight_info["destination"]["city"]
+    arrival_airport = flight_info["destination"]["airport_name"]
+    departure_time = flight_info["filed_departure_time"]["time"]
+    arrival_time = flight_info["filed_arrival_time"]["time"]
+    airline = flight_info["airline"]
+
+    flight_dict = {'departure_city':departure_city, 'departure_airport':departure_airport, 'arrival_city':arrival_city,
+                   'arrival_airport':arrival_airport, 'departure_time':departure_time, 'arrival_time':arrival_time,
+                   'airline':airline}
+
+    print flight_dict
+
+    if response.status_code == 200:
+        return jsonify(flight_dict)
+    else:
+        print "Error executing request"
+
