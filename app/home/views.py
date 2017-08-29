@@ -8,6 +8,7 @@ from flask_login import login_required, current_user
 
 from . import home
 from forms import FlightForm, InsuranceForm
+from ..ML_algo import random_forest
 
 @home.route('/')
 def homepage():
@@ -49,7 +50,6 @@ def autocomplete():
 @home.route('/flight_details', methods=[ 'GET','POST'])
 def flight_details():
     form = FlightForm(request.args)
-    print ('Entered')
     if (form.submit.data and form.date.data):
         flight = form.flight_id.data
         date = form.date.data
@@ -101,7 +101,9 @@ def get_flight_details():
 @home.route('/get_insurance', methods=[ 'GET','POST'])
 def get_insurance():
     form = InsuranceForm()
-    print session['flight_details']
+    flight_id = session['flight_details']['flight']
+    flight_date = session['flight_details']['date']
+    rates = random_forest(flight_id, flight_date)
     form.insurance_rate.choices = [('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
 
     return render_template('home/get_insurance.html', form = form, title = "Select Insurance")
