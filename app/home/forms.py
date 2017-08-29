@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 from wtforms_components import DateTimeField, read_only, DateRange
 from wtforms.fields.html5 import DateField
@@ -22,3 +22,12 @@ class FlightForm(FlaskForm):
     date = DateField('Flight Date', validators=[DataRequired(), DateRange(min=datetime(2017,9,1))])
 
     submit = SubmitField('Calculate Insurance rates')
+
+class InsuranceForm(FlaskForm):
+    """
+    Form for user to select insurance
+    """
+    insurance_rate = SelectField('InsuranceRates')
+    get_insurance = SubmitField('Select Insurance')
+    
+

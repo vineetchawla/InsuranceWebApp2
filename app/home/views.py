@@ -1,23 +1,21 @@
 # app/home/views.py
 
-from . import home
-from forms import FlightForm
-from .. import db
 from ..models import User, DB_flight_data
 import requests
 
-from flask import render_template, session, redirect, url_for, abort, jsonify, request, json
+from flask import render_template, session, redirect, url_for, abort, jsonify, request, flash
 from flask_login import login_required, current_user
 
 from . import home
-from forms import FlightForm
+from forms import FlightForm, InsuranceForm
 
 @home.route('/')
 def homepage():
     """
     Render the homepage template on the / route
     """
-    return render_template('home/index.html', title="Welcome")
+    return redirect(url_for('home.dashboard'))
+
 
 @home.route('/dashboard')
 @login_required
@@ -39,6 +37,7 @@ def admin_dashboard():
 
     return render_template('home/admin_dashboard.html', title="Dashboard")
 
+
 @home.route('/autocomplete', methods=['GET'])
 def autocomplete():
     search = request.args.get('q')
@@ -46,11 +45,23 @@ def autocomplete():
     query = map(str, query)
     return jsonify(result=query)
 
-@home.route('/flight_details', methods=['GET'])
+
+@home.route('/flight_details', methods=[ 'GET','POST'])
 def flight_details():
-    form = FlightForm()
+    form = FlightForm(request.args)
+    print ('Entered')
+    if (form.submit.data and form.date.data):
+        flight = form.flight_id.data
+        date = form.date.data
+        message = {'flight':flight, 'date':date}
+        session['flight_details'] = message
+        return redirect(url_for('home.get_insurance'))
+    else:
+        print form.data
+        print "Not validating"
 
     return render_template('home/flight_details.html', form = form, title = "Select A Flight")
+
 
 @home.route('/get_flight_details', methods=['GET'])
 def get_flight_details():
@@ -86,3 +97,11 @@ def get_flight_details():
     else:
         print "Error executing request"
 
+
+@home.route('/get_insurance', methods=[ 'GET','POST'])
+def get_insurance():
+    form = InsuranceForm()
+    print session['flight_details']
+    form.insurance_rate.choices = [('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+
+    return render_template('home/get_insurance.html', form = form, title = "Select Insurance")
