@@ -1,0 +1,25 @@
+<!-- app/templates/home/flight_details.html -->
+
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Select Insurance{% endblock %}
+{% block body %}
+
+
+<div class="intro-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 col-sm-6">
+                <h1>Your Flight Insurance details</h1>
+                <h2 class="subtitle">please select your insurance ratem</h2>
+                <form class="form-inline signup" role="form">
+                    <div class="form-group">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
