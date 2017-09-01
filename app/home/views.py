@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from . import home
 from forms import FlightForm, InsuranceForm
 from ..ML_algo import random_forest
+from .. import db
 
 @home.route('/')
 def homepage():
@@ -104,6 +105,12 @@ def get_insurance():
     flight_id = session['flight_details']['flight']
     flight_date = session['flight_details']['date']
     rates = random_forest(flight_id, flight_date)
-    form.insurance_rate.choices = [('cpp', 'C++'), ('py', 'Python'), ('text', 'Plain Text')]
+    session['insurance_rates'] = rates
+    #We just return the rates to the db, displaying of rates can be done in HTML templates
+    return render_template('home/get_insurance.html', form = form, title = "Select Insurance", rates = rates)
 
-    return render_template('home/get_insurance.html', form = form, title = "Select Insurance")
+@home.route('/create_insurance')
+def create_insurance():
+    flight_id = session['flight_details']['flight']
+    flight_date = session['flight_details']['date']
+    rates = session['insurance_rates']

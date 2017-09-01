@@ -11,12 +11,21 @@
         <div class="row">
             <div class="col-lg-6 col-sm-6">
                 <h1>Your Flight Insurance details</h1>
-                <h2 class="subtitle">please select your insurance ratem</h2>
-                <form class="form-inline signup" role="form">
-                    <div class="form-group">
-                        {{ wtf.quick_form(form) }}
-                    </div>
-                </form>
+                <h2 class="subtitle">please select your insurance rate</h2>
+                <table style="width:100%">
+                  <tr>
+                    <th>Flight Delay</th>
+                    <th>You get paid</th>
+                  </tr>
+                  {% for rate in rates %}
+                    <tr>
+                        <td> {{ rate.no_delay }} </td>
+                        <td> {{ rate.upto_15_min }} </td>
+                        <td> {{ rate.upto_1_hour }} </td>
+                        <td> {{ rate.more_than_1_hour }} </td>
+                    </tr>
+                </table>
+                <a href="{{ url_for('home.create_insurance') }}">Create Insurance</a>
             </div>
         </div>
     </div>

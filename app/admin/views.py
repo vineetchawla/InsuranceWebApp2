@@ -6,7 +6,6 @@ from flask_login import current_user, login_required
 from . import admin
 from .. import db
 from ..models import User
-from ..models import Insurance
 
 def check_admin():
     """

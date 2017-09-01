@@ -27,7 +27,6 @@ class InsuranceForm(FlaskForm):
     """
     Form for user to select insurance
     """
-    insurance_rate = SelectField('InsuranceRates')
     get_insurance = SubmitField('Select Insurance')
     
 

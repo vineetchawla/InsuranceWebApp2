@@ -19,9 +19,11 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(60), index=True)
     last_name = db.Column(db.String(60), index=True)
     password_hash = db.Column(db.String(128))
-    flight_id = db.Column(db.String(10), db.ForeignKey('flights.id'))
-    insurance_id = db.Column(db.Integer, db.ForeignKey('insurances.id'))
     is_admin = db.Column(db.Boolean, default=False)
+    amount_paid = db.Column(db.Integer, default = 10)
+    amount_15 = db.Column(db.Integer)
+    amount_60 = db.Column(db.Integer)
+    amount_61 = db.Column(db.Integer)
 
     @property
     def password(self):
@@ -51,43 +53,6 @@ class User(UserMixin, db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-class Flight(db.Model):
-    """
-    Create a Flight table
-    """
-
-    __tablename__ = 'flights'
-
-    id = db.Column(db.String(10), primary_key=True)
-    from_airport = db.Column(db.String(60))
-    to_airport = db.Column(db.String(60))
-    arrival_time = db.Column(db.Time)
-    departure_time = db.Column(db.Time)
-    flight_company = db.Column(db.String(20))
-    users = db.relationship('User', backref='flight',
-                                lazy='dynamic')
-
-
-    def __repr__(self):
-        return '<Flight: {}>'.format(self.id)
-
-class Insurance(db.Model):
-    """
-    Create a Role table
-    """
-
-    __tablename__ = 'insurances'
-    id = db.Column(db.Integer, primary_key=True)
-    principal = db.Column(db.Float)
-    interest = db.Column(db.Float)
-    payment_account = db.Column(db.String(100))
-    description = db.Column(db.String(200))
-
-    users = db.relationship('User', backref='insurance',
-                                lazy='dynamic')
-
-    def __repr__(self):
-        return '<Insurance: {}>'.format(self.id)
 
 class DB_flight_data(db.Model):
     Flight_no = db.Column(db.String(10), primary_key=True)
