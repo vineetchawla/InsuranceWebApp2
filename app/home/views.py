@@ -8,7 +8,9 @@ from flask_login import login_required, current_user
 
 from . import home
 from forms import FlightForm, InsuranceForm
-from ..ML_algo import random_forest
+from ..data import random_forest
+from datetime import datetime
+
 from .. import db
 
 @home.route('/')
@@ -114,3 +116,46 @@ def create_insurance():
     flight_id = session['flight_details']['flight']
     flight_date = session['flight_details']['date']
     rates = session['insurance_rates']
+
+    username = "vineetchawla19@gmail.com"
+    api_key = "JcYANOUUIs1HAmIfhdlMhDGryMdZR2gv1qIuib3/kZU="
+    bc_url = "https://api.tierion.com/v1/records"
+    content_type = 'application/json'
+
+
+    firstname = current_user.first_name
+    lastname = current_user.last_name
+    user_email = current_user.email
+    delay_15 = rates['upto_15_mins']
+    delay_60 = rates['upto_1_hour']
+    delay_61 = rates['more_than_1_hour']
+    creation_time = datetime.now()
+
+
+    blockchain_data = {"datastoreId":1554,
+                       "firstname" :firstname,
+                       "lastname" : lastname,
+                       "flight_id" : flight_id,
+                       "flight_date" : flight_date,
+                       "delay_15": delay_15,
+                       "delay_60":delay_60,
+                       "delay_61":delay_61,
+                       "user_email":user_email,
+                       #"creation_time":creation_time
+                        }
+
+    custom_header = {"X-Username" : username, "X-Api-Key":api_key, "Content-Type":content_type}
+    response = requests.post(bc_url, json=blockchain_data, headers=custom_header)
+    insurance_details = response.json()
+
+    user = User.query.filter_by(email=user_email).first()
+    user.status = insurance_details["status"]
+    user.insurance_id = insurance_details["id"]
+    user.timestamp = insurance_details["timestamp"]
+
+    db.session.merge(user)
+    db.session.commit()
+
+
+    return render_template('home/dashboard.html')
+

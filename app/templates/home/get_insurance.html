@@ -17,12 +17,21 @@
                     <th>Flight Delay</th>
                     <th>You get paid</th>
                   </tr>
-                  {% for rate in rates %}
                     <tr>
-                        <td> {{ rate.no_delay }} </td>
-                        <td> {{ rate.upto_15_min }} </td>
-                        <td> {{ rate.upto_1_hour }} </td>
-                        <td> {{ rate.more_than_1_hour }} </td>
+                        <td>No delay</td>
+                        <td> {{ rates.no_delay }} </td>
+                    </tr>
+                    <tr>
+                        <td>Upto 15 mins</td>
+                        <td> {{ rates.upto_15_mins }} </td>
+                    </tr>
+                    <tr>
+                        <td>Upto 1 hour</td>
+                        <td> {{ rates.upto_1_hour }} </td>
+                    </tr>
+                    <tr>
+                        <td>More than 1 hour</td>
+                        <td> {{ rates.more_than_1_hour }} </td>
                     </tr>
                 </table>
                 <a href="{{ url_for('home.create_insurance') }}">Create Insurance</a>

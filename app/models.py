@@ -24,6 +24,10 @@ class User(UserMixin, db.Model):
     amount_15 = db.Column(db.Integer)
     amount_60 = db.Column(db.Integer)
     amount_61 = db.Column(db.Integer)
+    insurance_id = db.Column(db.String(25))
+    blockchain_receipt = db.Column(db.String(500))
+    status = db.Column(db.String(10))
+    timestamp = db.Column(db.String(15))
 
     @property
     def password(self):

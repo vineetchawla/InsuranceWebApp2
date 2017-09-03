@@ -7,3 +7,7 @@ def random_forest(flight_id, date):
                     'more_than_1_hour' : 40}
     #will add algorithm later
     return flight_rates
+
+def set_blockchain(user_data):
+    anchor = {}
+    return anchor
