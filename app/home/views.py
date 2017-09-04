@@ -56,7 +56,11 @@ def flight_details():
     if (form.submit.data and form.date.data):
         flight = form.flight_id.data
         date = form.date.data
-        message = {'flight':flight, 'date':date}
+        departure_city = form.departure_city.data
+        arrival_city = form.arrival_city.data
+        airline = form.airline.data
+        message = {'flight':flight, 'date':date, 'origin':departure_city, 'destination':arrival_city,
+                   'airline':airline}
         session['flight_details'] = message
         return redirect(url_for('home.get_insurance'))
     else:
@@ -115,6 +119,9 @@ def get_insurance():
 def create_insurance():
     flight_id = session['flight_details']['flight']
     flight_date = session['flight_details']['date']
+    origin = session["flight_details"]["origin"]
+    destination = session["flight_details"]["destination"]
+    airline = session["flight_details"]["airline"]
     rates = session['insurance_rates']
 
     username = "vineetchawla19@gmail.com"
@@ -152,6 +159,13 @@ def create_insurance():
     user.status = insurance_details["status"]
     user.insurance_id = insurance_details["id"]
     user.timestamp = insurance_details["timestamp"]
+    user.flight_id = flight_id
+    user.flight_date = flight_date
+    user.airline = airline
+    user.flight_destination = destination
+    user.flight_origin = origin
+    user.has_insurance = 1
+
 
     db.session.merge(user)
     db.session.commit()
@@ -159,3 +173,22 @@ def create_insurance():
 
     return render_template('home/dashboard.html')
 
+@home.route('/status_update/<string:id>', methods=['GET', 'POST'])
+def update_bc_status(id):
+    username = "vineetchawla19@gmail.com"
+    api_key = "JcYANOUUIs1HAmIfhdlMhDGryMdZR2gv1qIuib3/kZU="
+    bc_url = "https://api.tierion.com/v1/records"
+    content_type = 'application/json'
+
+    custom_header = {"X-Username": username, "X-Api-Key": api_key, "Content-Type": content_type}
+
+    response = requests.get(bc_url + id, params=custom_header)
+    insurance_details = response.json()
+    user = User.query.filter_by(status=id).first()
+    user.status = insurance_details["status"]
+    user.blockchain_receipt = insurance_details["blockchain_receipt"]
+
+    db.session.merge(user)
+    db.session.commit()
+
+    return render_template('home/dashboard.html')
