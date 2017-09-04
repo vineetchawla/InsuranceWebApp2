@@ -3,7 +3,7 @@
 from ..models import User, DB_flight_data
 import requests
 
-from flask import render_template, session, redirect, url_for, abort, jsonify, request, flash
+from flask import render_template, session, redirect, url_for, abort, jsonify, request, json
 from flask_login import login_required, current_user
 
 from . import home
@@ -174,19 +174,21 @@ def create_insurance():
     return render_template('home/dashboard.html')
 
 @home.route('/status_update/<string:id>', methods=['GET', 'POST'])
-def update_bc_status(id):
+def status_update(id):
     username = "vineetchawla19@gmail.com"
     api_key = "JcYANOUUIs1HAmIfhdlMhDGryMdZR2gv1qIuib3/kZU="
-    bc_url = "https://api.tierion.com/v1/records"
+    bc_url = "https://api.tierion.com/v1/records/"
     content_type = 'application/json'
 
     custom_header = {"X-Username": username, "X-Api-Key": api_key, "Content-Type": content_type}
 
-    response = requests.get(bc_url + id, params=custom_header)
+    response = requests.get(bc_url + id, headers=custom_header)
     insurance_details = response.json()
-    user = User.query.filter_by(status=id).first()
+    print insurance_details
+    user_email = current_user.email
+    user = User.query.filter_by(email=user_email).first()
     user.status = insurance_details["status"]
-    user.blockchain_receipt = insurance_details["blockchain_receipt"]
+    user.blockchain_receipt = json.dumps(insurance_details["blockchain_receipt"])
 
     db.session.merge(user)
     db.session.commit()
