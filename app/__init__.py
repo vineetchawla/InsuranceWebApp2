@@ -16,7 +16,6 @@ from config import app_config
 # db variable initialization
 db = SQLAlchemy()
 login_manager = LoginManager()
-mail = Mail()
 
 def create_app(config_name):
     if os.getenv('FLASK_CONFIG') == "production":
