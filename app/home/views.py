@@ -10,6 +10,8 @@ from . import home
 from forms import FlightForm, InsuranceForm
 from ..data import random_forest
 from datetime import datetime
+from flask_mail import Message
+import smtplib
 
 from .. import db
 
@@ -56,11 +58,12 @@ def flight_details():
     if (form.submit.data and form.date.data):
         flight = form.flight_id.data
         date = form.date.data
+        time = form.arrival_time.data
         departure_city = form.departure_city.data
         arrival_city = form.arrival_city.data
         airline = form.airline.data
         message = {'flight':flight, 'date':date, 'origin':departure_city, 'destination':arrival_city,
-                   'airline':airline}
+                   'airline':airline, 'arrival_time':time}
         session['flight_details'] = message
         return redirect(url_for('home.get_insurance'))
     else:
@@ -170,6 +173,22 @@ def create_insurance():
     db.session.merge(user)
     db.session.commit()
 
+    msg = "Your insurance has been created with us for flight %s on %s. You will receive another Email if your " \
+              "flight has been delayed with your simulated payment " % (flight_id, flight_date)
+    subject = "Hello %s" % firstname
+
+    message = 'Subject: {}\n\n{}'.format(subject, msg)
+
+    # Credentials (if needed)
+    username = 'vineetchawla19@gmail.com'
+    password = 'new_era2007'
+
+    # The actual mail send
+    server = smtplib.SMTP('smtp.gmail.com:587')
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(user_email, username, message)
+    server.quit()
 
     return render_template('home/dashboard.html')
 
