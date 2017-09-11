@@ -181,7 +181,7 @@ def create_insurance():
 
     # Credentials (if needed)
     username = 'vineetchawla19@gmail.com'
-    password = 'new_era2007'
+    password = ''
 
     # The actual mail send
     server = smtplib.SMTP('smtp.gmail.com:587')
