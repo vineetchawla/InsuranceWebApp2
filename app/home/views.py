@@ -3,7 +3,7 @@
 from ..models import User, DB_flight_data
 import requests
 
-from flask import render_template, session, redirect, url_for, abort, jsonify, request, json
+from flask import render_template, session, redirect, url_for, abort, jsonify, request, json, Flask
 from flask_login import login_required, current_user
 
 from . import home
@@ -12,8 +12,10 @@ from ..data import random_forest
 from datetime import datetime
 from flask_mail import Message
 import smtplib
-
+from apscheduler.schedulers import SchedulerAlreadyRunningError
+from flask_apscheduler import APScheduler
 from .. import db
+
 
 @home.route('/')
 def homepage():
@@ -167,8 +169,9 @@ def create_insurance():
     user.airline = airline
     user.flight_destination = destination
     user.flight_origin = origin
-    user.has_insurance = 1
-
+    user.amount_15 = delay_15
+    user.amount_60 = delay_60
+    user.amount_61 = delay_61
 
     db.session.merge(user)
     db.session.commit()
@@ -181,14 +184,16 @@ def create_insurance():
 
     # Credentials (if needed)
     username = 'vineetchawla19@gmail.com'
-    password = ''
+    password = 'new_era2007'
 
     # The actual mail send
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
     server.login(username, password)
-    server.sendmail(user_email, username, message)
+    #server.sendmail(user_email, username, message)
     server.quit()
+
+
 
     return render_template('home/dashboard.html')
 
