@@ -1,17 +1,14 @@
 # app/__init__.py
 
 # third-party imports
-from flask import Flask, session
+from flask import Flask
 from flask_sslify import SSLify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_bootstrap import Bootstrap
 import os
-#from flask.ext.session import Session
-
-# local imports
-from config import app_config
+from config import app_config, Config
 
 # db variable initialization
 db = SQLAlchemy()
@@ -29,13 +26,11 @@ def create_app(config_name):
         app.config.from_object(app_config[config_name])
         app.config.from_pyfile('config.py')
 
-
     db.init_app(app)
     Bootstrap(app)
     SSLify(app)
-    #Session(app)
-
     login_manager.init_app(app)
+
     login_manager.login_message = "You must be logged in to access this page."
     login_manager.login_view = "auth.login"
 
