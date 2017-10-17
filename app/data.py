@@ -1,5 +1,6 @@
 from datetime import date, time, datetime
 from dateutil import parser
+import requests, subprocess
 
 airport_dict = {
     'MUN': 'Munich (MUC)',
@@ -55,34 +56,89 @@ airport_location = {
     'NRN': '51.599,6.148'
 }
 
-def call_service(latitude, longitude, time):
-    baseURL = "https://api.darksky.net/forecast/50703cec8c0b8f26a09008c3b65b130b/%(latitude)s,%(longitude)s,%(time)s" \
-              % {'latitude': latitude, 'longitude': longitude, 'time': time}
-    baseURL = unicode(baseURL, errors='replace')
+def call_service(location, time):
+    baseURL = "https://api.darksky.net/forecast/50703cec8c0b8f26a09008c3b65b130b/%(location)s,%(time)s" \
+              % {'location': location, 'time': time}
+    #baseURL = unicode(baseURL, errors='replace')
     payload = {'exclude' : 'hourly,daily,flags', 'units' : 'si'}
-    try:
-        r = requests.get(baseURL, params = payload)
-        data = r.json()
-        print data['currently']
-        return data['currently']
-    except:# This is the correct syntax
-        print 'some error'
-        return 'blank'
+
+    r = requests.get(baseURL, params = payload)
+    data = r.json()
+    return data['currently']
+
 
 def random_forest(flight_id, date, airline, aircraft, airport_code,
                           arrival_time, flight_duration):
 
-    time2 = arrival_time
-    datetime = date + " " + time2
-    dt = parser.parse(datetime)
+    date_time = date + " " + arrival_time
+    dt = parser.parse(date_time)
     epoch = datetime(1970, 1, 1)
+
+    # needed for Darksky weather API, seconds from 1970
     delta_time = (dt - epoch).total_seconds()
 
+    # time is divided in 12 blocks of hours, we assign hour as the nearest lower even number
+    time_block = dt.hour
+    if (time_block % 2) != 0:
+        time_block = time_block - 1
 
+    weekend = 0
+    if dt.weekday() > 4:
+        weekend = 1
+
+    #get weather
+    weather = call_service(airport_location[airport_code], int(delta_time))
+
+    # params = {
+    #     'arrival_airport' : airport_dict[airport_code],
+    #     'airline' : airline,
+    #     'aircraft' : aircraft,
+    #     'flight_time' : flight_duration,
+    #     'weekend' : weekend,
+    #     'time_block': time_block,
+    #     'apparentTemperature': weather["apparentTemperature"],
+    #     'dewPoint' : weather["dewPoint"],
+    #     'humidity': weather["humidity"],
+    #     'windSpeed': weather["windSpeed"],
+    #     'windBearing': weather["windBearing"],
+    #     'visibility': weather["visibility"],
+    #     'cloudCover': weather["cloudCover"],
+    #     'pressure': weather["pressure"]
+    # }
+
+    #cant pass list to shell as an argument. so made all strings and then concatenated to one string
+    #String passed to r . it can be separated later in R
+    params = [
+             '%s' % str(airport_dict[airport_code]),
+        '%s' % str(airline),
+        '%s' % str(aircraft),
+        '%s' % str(flight_duration),
+        '%s' % str(weekend),
+        '%s' % str(time_block),
+        '%s' % str(weather["apparentTemperature"]),
+        '%s' % str(weather["dewPoint"]),
+        '%s' % str(weather["humidity"]),
+        '%s' % str(weather["windSpeed"]),
+        '%s' % str(weather["windBearing"]),
+        '%s' % str(weather["visibility"]),
+        '%s' % str(weather["cloudCover"]),
+        '%s' % str(weather["pressure"]),
+        '%s' % str(weather["summary"])
+    ]
+    new_param = ":".join(params)
+
+    command = 'Rscript'
+    arg = '--vanilla'
+    path = "/Users/vineetchawla/PycharmProjects/InsuranceWebApp2/app/predictor_script.R"
+
+    #cmd = [command + " " +path] + abc
+    x = subprocess.check_output([command, arg, path, new_param], universal_newlines=True)
+
+    print x
 
     flight_rates = {'no_delay' : 0, 'upto_15_mins' : 30, 'upto_1_hour':60 ,
                     'more_than_1_hour' : 90}
-    #will add algorithm later
+
     return flight_rates
 
 def set_blockchain(user_data):

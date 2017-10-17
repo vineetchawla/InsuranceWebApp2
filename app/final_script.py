@@ -10,7 +10,6 @@ def check_status(flight_id, flight_date):
     day = dt.day
     month = dt.month
 
-
     #sepearting text and number
     r = re.compile("([a-zA-Z]+)([0-9]+)")
     m = r.match(flight_id)
@@ -21,8 +20,6 @@ def check_status(flight_id, flight_date):
     fxmlUrl = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/%s/%s/arr/%s/%s/%s/" % \
               (airline, id, year, month, day)
     appKey = "ac59166440b0780b5e6cbefd1f531c74"
-
-
 
     payload = {'appID':appid, 'appKey':appKey, 'utc':'true'}
     response = requests.get(fxmlUrl, headers=payload)
