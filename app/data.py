@@ -126,18 +126,24 @@ def random_forest(flight_id, date, airline, aircraft, airport_code,
         '%s' % str(weather["summary"])
     ]
     new_param = ":".join(params)
+    print new_param
 
     command = 'Rscript'
     arg = '--vanilla'
     path = "/Users/vineetchawla/PycharmProjects/InsuranceWebApp2/app/predictor_script.R"
 
     #cmd = [command + " " +path] + abc
-    x = subprocess.check_output([command, arg, path, new_param], universal_newlines=True)
+    #The value returned from the r script is the prediction for the flight delays passed
+    #it can be 0,1,2,3
+    x = int(subprocess.check_output([command, arg, path, new_param], universal_newlines=True))
 
+    #delay calculated using : (60 * delayclass)/(predicted_delayclass + 1),
     print x
-
-    flight_rates = {'no_delay' : 0, 'upto_15_mins' : 30, 'upto_1_hour':60 ,
-                    'more_than_1_hour' : 90}
+    delay_15 = (60 * 1)/(x + 1)
+    delay_61 = (60 * 2)/(x + 1)
+    delay_121 = (60 * 3)/(x+1)
+    flight_rates = {'no_delay' : 0, 'upto_15_mins' : delay_15, 'upto_1_hour':delay_61 ,
+                    'more_than_1_hour' : delay_121}
 
     return flight_rates
 
