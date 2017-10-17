@@ -141,7 +141,6 @@ def get_insurance():
     arrival_time = session['flight_details']['arrival_time']
     flight_duration = session['flight_details']['flight_duration']
 
-
     rates = random_forest(flight_id, flight_date, airline, aircraft, airport_code,
                           arrival_time, flight_duration)
 
@@ -184,7 +183,6 @@ def create_insurance():
                        "delay_60":delay_60,
                        "delay_61":delay_61,
                        "user_email":user_email,
-                       #"creation_time":creation_time
                         }
 
     custom_header = {"X-Username" : username, "X-Api-Key":api_key, "Content-Type":content_type}
