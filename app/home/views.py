@@ -12,8 +12,6 @@ from ..data import random_forest
 from datetime import datetime
 from flask_mail import Message
 import smtplib
-from apscheduler.schedulers import SchedulerAlreadyRunningError
-from flask_apscheduler import APScheduler
 from .. import db
 
 
@@ -59,14 +57,28 @@ def flight_details():
     form = FlightForm(request.args)
     if (form.submit.data and form.date.data):
         flight = form.flight_id.data
+
+        #to make sure no empty time string is added
         date = form.date.data
+        date = '{:%d/%m/%Y}'.format(date)
+
+        #fixing time converted to none when saved to session
+
         time = form.arrival_time.data
+
+
         departure_city = form.departure_city.data
         arrival_city = form.arrival_city.data
         airline = form.airline.data
+        aircraft = form.aircraft.data
+        duration = form.flight_duration.data
+        airport_code = form.airport_code.data
+
         message = {'flight':flight, 'date':date, 'origin':departure_city, 'destination':arrival_city,
-                   'airline':airline, 'arrival_time':time}
+                   'airline':airline, 'arrival_time':time, 'airport_code':airport_code,
+                   'aircraft':aircraft, 'flight_duration':duration}
         session['flight_details'] = message
+        #print session
         return redirect(url_for('home.get_insurance'))
     else:
         print form.data
@@ -78,7 +90,6 @@ def flight_details():
 @home.route('/get_flight_details', methods=['GET'])
 def get_flight_details():
     search =request.args.get('q')
-    print search
 
     username = "vineetchawla"
     apiKey = "bb5b25cd2fbd4afc31c786116c8034a20234cb1e"
@@ -89,7 +100,6 @@ def get_flight_details():
                             params=payload, auth=(username, apiKey))
     flight_json =  response.json()
     flight_info = flight_json["FlightInfoStatusResult"]["flights"][0]
-
     departure_city = flight_info["origin"]["city"]
     departure_airport = flight_info["origin"]["airport_name"]
     arrival_city = flight_info["destination"]["city"]
@@ -97,12 +107,22 @@ def get_flight_details():
     departure_time = flight_info["filed_departure_time"]["time"]
     arrival_time = flight_info["filed_arrival_time"]["time"]
     airline = flight_info["airline"]
+    aircraft = flight_info["aircrafttype"]
+    airport_code = flight_info["destination"]["alternate_ident"]
+
+    #print "API request " + arrival_time + aircraft + airport_code
+
+    #The API doesn't have exact flight duration so calculating with epoch
+    epoch_departure = long(flight_info["filed_departure_time"]["epoch"])
+    epoch_arrival = long(flight_info["filed_arrival_time"]["epoch"])
+    flight_duration = epoch_arrival - epoch_departure
 
     flight_dict = {'departure_city':departure_city, 'departure_airport':departure_airport, 'arrival_city':arrival_city,
                    'arrival_airport':arrival_airport, 'departure_time':departure_time, 'arrival_time':arrival_time,
-                   'airline':airline}
+                   'airline':airline, 'aircraft':aircraft, 'airport_code':airport_code,
+                   'flight_duration':flight_duration}
 
-    print flight_dict
+    #print flight_dict
 
     if response.status_code == 200:
         return jsonify(flight_dict)
@@ -115,7 +135,16 @@ def get_insurance():
     form = InsuranceForm()
     flight_id = session['flight_details']['flight']
     flight_date = session['flight_details']['date']
-    rates = random_forest(flight_id, flight_date)
+    airline = session['flight_details']['airline']
+    aircraft = session['flight_details']['aircraft']
+    airport_code = session['flight_details']['airport_code']
+    arrival_time = session['flight_details']['arrival_time']
+    flight_duration = session['flight_details']['flight_duration']
+
+
+    rates = random_forest(flight_id, flight_date, airline, aircraft, airport_code,
+                          arrival_time, flight_duration)
+
     session['insurance_rates'] = rates
     #We just return the rates to the db, displaying of rates can be done in HTML templates
     return render_template('home/get_insurance.html', form = form, title = "Select Insurance", rates = rates)
@@ -128,6 +157,8 @@ def create_insurance():
     destination = session["flight_details"]["destination"]
     airline = session["flight_details"]["airline"]
     rates = session['insurance_rates']
+
+    print session
 
     username = "vineetchawla19@gmail.com"
     api_key = "JcYANOUUIs1HAmIfhdlMhDGryMdZR2gv1qIuib3/kZU="
