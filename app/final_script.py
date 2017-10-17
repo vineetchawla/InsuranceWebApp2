@@ -16,17 +16,15 @@ def check_status(flight_id, flight_date):
     airline = m.group(1)
     id = m.group(2)
 
-    appid = "206301f3"
+    appid = "f69749da"
     fxmlUrl = "https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/%s/%s/arr/%s/%s/%s/" % \
               (airline, id, year, month, day)
-    appKey = "ac59166440b0780b5e6cbefd1f531c74"
+    appKey = "a3c8532df635acc481ef1929f99a0a6d"
 
     payload = {'appID':appid, 'appKey':appKey, 'utc':'true'}
     response = requests.get(fxmlUrl, headers=payload)
     flight_json = response.json()
-    print flight_json
-    #flight_delay = flight_json["flightTrack"]["delayMinutes"]
-    flight_delay = 10
+    flight_delay = flight_json["flightStatuses"][0]["delays"]["arrivalGateDelayMinutes"]
 
     return flight_delay
 
@@ -60,7 +58,7 @@ for row in data:
     elif delay > 15:
         payout = rates_15
 
-    msg = "Your flight %s  on % has landed and it was delayed for %s minutes. " \
+    msg = "Your flight %s  on %s has landed and it was delayed for %s minutes. " \
           "You will receive %s Euros in your hypothetical account as the payout " \
           % (flight_id, flight_date, delay, payout)
 
@@ -72,17 +70,15 @@ for row in data:
     username = 'vineetchawla19@gmail.com'
     password = 'new_era2007'
 
-    # The actual mail send
+    # The actual mail sending
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
     server.login(username, password)
-    # server.sendmail(user_email, username, message)
+    server.sendmail(email, username, message)
     server.quit()
 
     exit(0)
 
 db.close()
-#mysql://dt_admin:dt2016@localhost/appdb
-
 
 
