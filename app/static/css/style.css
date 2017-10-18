@@ -67,19 +67,17 @@ p.copyright {
 }
 
 .intro-header {
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     text-align: center;
     color: #000000;
-    background: url(../img/intro-bg.jpg) no-repeat center center;
-    background-size: cover;
-    height: 100%;
+    height: 50%;
 }
 
 .intro-message {
     position: relative;
-    padding-top: 20%;
-    padding-bottom: 20%;
+    padding-top: 5%;
+    padding-bottom: 5%;
 }
 
 .intro-message > h1 {
@@ -123,4 +121,6 @@ p.copyright {
 .inner {
     margin-left: auto;
     margin-right: auto;
+}
+
 }

@@ -20,7 +20,9 @@ def homepage():
     """
     Render the homepage template on the / route
     """
-    return redirect(url_for('home.dashboard'))
+    return render_template('home/index.html', title='Automated Flight Delay Insurance')
+    #return redirect(url_for('home.index'))
+
 
 
 @home.route('/dashboard')
